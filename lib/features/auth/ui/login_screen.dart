@@ -4,33 +4,23 @@ import 'package:bookstore/features/auth/ui/register_screen.dart';
 import 'package:bookstore/features/auth/ui/widgets/social_button.dart';
 import 'package:bookstore/features/forgotPassword/ui/forgot_password_screen.dart';
 import 'package:bookstore/generated/locale_keys.g.dart';
+import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../gen/assets.gen.dart';
-
-
-
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
-
   set isPasswordObscure(bool isPasswordObscure) {}
-
-
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
+
 class _LoginScreenState extends State<LoginScreen> {
-  bool isObscure = true;
-
-
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-
+  var  emailController = TextEditingController();
+  var  passwordController = TextEditingController();
   @override
   void dispose() {
     emailController.dispose();
@@ -86,23 +76,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 SizedBox(height: 32.h),
 
-                AppTextField(hintText: LocaleKeys.enterEmail.tr()),
+                AppTextField(
+                controller: emailController
+                ,hintText: LocaleKeys.enterEmail.tr()),
 
                 SizedBox(height: 16.h),
 
-                AppTextField(hintText: LocaleKeys.enterPassword.tr(),
-                obscureText: true
-                    ,
-                suffixIcon: Padding(
-                  padding:  EdgeInsets.all(8.0.r),
-                  child: InkWell(
-                      onTap: (){
-                        setState(() {
-                          isObscure=!isObscure;
-                        });
-                      },
-                      child: SvgPicture.asset(Assets.images.fluentEye20Filled)),
-                ),
+                AppTextField(
+                controller: passwordController,
+                hintText: LocaleKeys.enterPassword.tr(),
+                  isPassword: true,
                 ),
 
                 SizedBox(height: 12.h),
@@ -223,6 +206,12 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  login(){
+
+    Dio dio=Dio();
+    dio.patch("https://mostafaesac-739873.postman.co/workspace/Mostafa-Isaac's-Workspace~e3c8c603-4ea7-41da-82a3-dbd825d8efdf/request/53203838-b2d69460-8385-425a-b22b-b7d4feecc6c7?action=share&creator=53203838");
   }
 }
 

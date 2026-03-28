@@ -38,6 +38,7 @@ dependencies:
   easy_localization: ^3.0.8
   flutter_gen: ^5.13.0+1
   flutter_svg: ^2.2.4
+  dio: ^5.9.2
 
 
 dev_dependencies:
