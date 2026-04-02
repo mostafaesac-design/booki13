@@ -1,12 +1,14 @@
+import 'package:bookstore/core/routes/routes.dart';
 import 'package:bookstore/core/widgets/app_button.dart';
 import 'package:bookstore/core/widgets/app_text_field.dart';
+import 'package:bookstore/features/auth/cubit/auth_cubit.dart';
 import 'package:bookstore/features/auth/ui/register_screen.dart';
 import 'package:bookstore/features/auth/ui/widgets/social_button.dart';
-import 'package:bookstore/features/forgotPassword/ui/forgot_password_screen.dart';
+import 'package:bookstore/features/auth/ui/forgot_password_screen.dart';
 import 'package:bookstore/generated/locale_keys.g.dart';
-import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../core/theme/app_colors.dart';
 
@@ -41,6 +43,27 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 SizedBox(height: 16.h),
 
+                // Container(
+                //   width: 40.w,
+                //   height: 40.h,
+                //   decoration: BoxDecoration(
+                //     borderRadius: BorderRadius.circular(12.r),
+                //     border: Border.all(
+                //       width: 1.w,
+                //     ),
+                //   ),
+                //   child: IconButton(
+                //     onPressed: () {
+                //       Navigator.pop(context);
+                //     },
+                //     icon: Icon(
+                //       Icons.arrow_back_ios_new,
+                //       size: 18.sp,
+                //     ),
+                //   ),
+                // ),
+
+
                 Container(
                   width: 40.w,
                   height: 40.h,
@@ -52,7 +75,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   child: IconButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      if (Navigator.canPop(context)) {
+                        Navigator.pop(context);
+                      } else {
+                        Navigator.pushReplacementNamed(context, Routes.welcomeScreen);
+                      }
                     },
                     icon: Icon(
                       Icons.arrow_back_ios_new,
@@ -112,9 +139,28 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
 
                 SizedBox(height: 30.h),
-
-               AppButton(
+               BlocListener<AuthCubit, AuthState>(
+                 listener: (context, state) {
+                   if (state is AuthLoadingState){
+                     showDialog(context: context, builder: (context)=>
+                         Center(child: CircularProgressIndicator(
+                         )));
+                   }else if(state is AuthErrorState){
+                      Navigator.pop(context);
+                     showDialog(context: context, builder:(context)=> AlertDialog(
+                       title: Text("Error"),
+                       content: Text("hhhhhhh"),
+                       
+                     ));
+                   }else if(state is AuthSuccessState){
+                   }
+                  },
+                child: AppButton(
                  text: LocaleKeys.login.tr(),
+                 onTap: (){
+                   context.read<AuthCubit>().login(email: emailController.text, password: passwordController.text);
+                 },
+               ),
                ),
 
 
@@ -208,10 +254,5 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  login(){
-
-    Dio dio=Dio();
-    dio.patch("https://mostafaesac-739873.postman.co/workspace/Mostafa-Isaac's-Workspace~e3c8c603-4ea7-41da-82a3-dbd825d8efdf/request/53203838-b2d69460-8385-425a-b22b-b7d4feecc6c7?action=share&creator=53203838");
-  }
 }
 

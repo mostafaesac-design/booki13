@@ -1,11 +1,9 @@
+import 'package:bookstore/core/routes/routes.dart';
 import 'package:bookstore/core/widgets/app_button.dart';
-import 'package:bookstore/features/auth/ui/login_screen.dart';
-import 'package:bookstore/features/auth/ui/register_screen.dart';
 import 'package:bookstore/generated/locale_keys.g.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import '../../gen/assets.gen.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -43,23 +41,13 @@ class WelcomeScreen extends StatelessWidget {
 
           AppButton(text: LocaleKeys.login.tr(),
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const LoginScreen(),
-                ),
-              );
+              Navigator.pushNamed(context, Routes.loginScreen);
             },
           ),
           SizedBox(height: 15.h,),
           AppButton(text: LocaleKeys.register.tr(),
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const RegisterScreen(),
-                ),
-              );
+              Navigator.pushNamed(context, Routes.registerScreen);
             },
             backgroundColor: Colors.white,
           ),
