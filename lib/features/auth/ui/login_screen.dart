@@ -140,26 +140,63 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 SizedBox(height: 30.h),
                BlocListener<AuthCubit, AuthState>(
+
+                 // listener: (context, state) {
+                 //   if (state is AuthLoadingState){
+                 //     showDialog(context: context, builder: (context)=>
+                 //         Center(child: CircularProgressIndicator(
+                 //         )));
+                 //   }else if(state is AuthErrorState){
+                 //      Navigator.pop(context);
+                 //     showDialog(context: context, builder:(context)=> AlertDialog(
+                 //       title: Text("Error"),
+                 //       content: Text("hhhhhhh"),
+                 //
+                 //     ));
+                 //   }else if(state is AuthSuccessState){
+                 //   }
+                 //  },
+
+
                  listener: (context, state) {
-                   if (state is AuthLoadingState){
-                     showDialog(context: context, builder: (context)=>
-                         Center(child: CircularProgressIndicator(
-                         )));
-                   }else if(state is AuthErrorState){
-                      Navigator.pop(context);
-                     showDialog(context: context, builder:(context)=> AlertDialog(
-                       title: Text("Error"),
-                       content: Text("hhhhhhh"),
-                       
-                     ));
-                   }else if(state is AuthSuccessState){
+                   if (state is AuthLoadingState) {
+                     showDialog(
+                       context: context,
+                       builder: (context) => const Center(
+                         child: CircularProgressIndicator(),
+                       ),
+                     );
+                   } else if (state is AuthErrorState) {
+                     Navigator.pop(context);
+
+                     showDialog(
+                       context: context,
+                       builder: (context) => const AlertDialog(
+                         title: Text("Error"),
+                         content: Text("Login Failed"),
+                       ),
+                     );
+                   } else if (state is AuthSuccessState) {
+                     Navigator.pop(context);
+
+                     Navigator.pushNamedAndRemoveUntil(
+                       context,
+                       Routes.homeScreen,
+                           (route) => false,
+                     );
                    }
-                  },
+                 },
+
+
                 child: AppButton(
                  text: LocaleKeys.login.tr(),
-                 onTap: (){
-                   context.read<AuthCubit>().login(email: emailController.text, password: passwordController.text);
-                 },
+                  onTap: () {
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      Routes.homeScreen,
+                          (route) => false,
+                    );
+                  },
                ),
                ),
 

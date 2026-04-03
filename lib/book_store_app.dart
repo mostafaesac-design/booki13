@@ -22,7 +22,7 @@ class BookStoreApp extends StatelessWidget {
         supportedLocales: context.supportedLocales,
         locale: context.locale,
         onGenerateRoute: AppRouter().onGenerateRoute,
-        initialRoute: Routes.welcomeScreen,
+        initialRoute: Routes.appStartScreen,
 
       
       ),

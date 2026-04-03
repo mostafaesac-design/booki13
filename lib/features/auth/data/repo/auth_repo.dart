@@ -1,6 +1,7 @@
 
 
 import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthRepo {
  static Dio dio=Dio();
@@ -16,6 +17,7 @@ class AuthRepo {
           }
       );
       if(response.statusCode==200){
+        saveUserToken(response.data["data"]["token"]);
         return true;
 
       }else{
@@ -28,4 +30,9 @@ class AuthRepo {
   }
 
 
+  static Future<void> saveUserToken(String token)async{
+   final SharedPreferences prefs= await SharedPreferences.getInstance();
+  prefs.setString("token", token);
+  print("successfully");
+  }
 }
