@@ -3,5 +3,6 @@ class Routes {
   static const String welcomeScreen = '/welcome';
   static const String loginScreen = '/login';
   static const String registerScreen = '/register';
+  static const String bottomNavBarScreen = '/bottomNavBar';
   static const String homeScreen = "/home";
 }

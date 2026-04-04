@@ -2,6 +2,7 @@ import 'package:bookstore/features/StartScreen/ui/app_start_screen.dart';
 import 'package:bookstore/features/auth/cubit/auth_cubit.dart';
 import 'package:bookstore/features/auth/ui/login_screen.dart';
 import 'package:bookstore/features/auth/ui/register_screen.dart';
+import 'package:bookstore/features/bottom_nav_bar/ui/bottom_nav_bar.dart';
 import 'package:bookstore/features/home/ui/home_screen.dart';
 import 'package:bookstore/features/welcome/welcome_screen.dart';
 import 'package:flutter/material.dart';
@@ -36,6 +37,12 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => const RegisterScreen(),
         );
+
+      case Routes.bottomNavBarScreen:
+        return MaterialPageRoute(
+          builder: (_) => const BottomNavBar(),
+        );
+
 
       case Routes.homeScreen:
         return MaterialPageRoute(

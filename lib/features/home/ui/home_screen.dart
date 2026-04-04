@@ -1,3 +1,5 @@
+import 'package:bookstore/features/home/ui/widgets/home_app_bar.dart';
+import 'package:bookstore/features/home/ui/widgets/home_slider.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -5,13 +7,11 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-      ),
-      body: const Center(
-        child: Text('Login Success'),
-      ),
+    return Column(
+      children: [
+        HomeAppBar(),
+        HomeSlider()
+      ],
     );
   }
 }

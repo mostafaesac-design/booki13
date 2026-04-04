@@ -21,7 +21,7 @@ class _AppStartScreenState extends State<AppStartScreen> {
       if (AppConstants.token == null || AppConstants.token!.isEmpty) {
         Navigator.pushReplacementNamed(context, Routes.welcomeScreen);
       } else {
-        Navigator.pushReplacementNamed(context, Routes.homeScreen);
+        Navigator.pushReplacementNamed(context, Routes.bottomNavBarScreen);
       }
     });
   }
