@@ -6,7 +6,6 @@ import 'package:bookstore/features/home/ui/home_screen.dart';
 import 'package:bookstore/features/welcome/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'routes.dart';
 
 class AppRouter {

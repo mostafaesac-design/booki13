@@ -43,26 +43,6 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 SizedBox(height: 16.h),
 
-                // Container(
-                //   width: 40.w,
-                //   height: 40.h,
-                //   decoration: BoxDecoration(
-                //     borderRadius: BorderRadius.circular(12.r),
-                //     border: Border.all(
-                //       width: 1.w,
-                //     ),
-                //   ),
-                //   child: IconButton(
-                //     onPressed: () {
-                //       Navigator.pop(context);
-                //     },
-                //     icon: Icon(
-                //       Icons.arrow_back_ios_new,
-                //       size: 18.sp,
-                //     ),
-                //   ),
-                // ),
-
 
                 Container(
                   width: 40.w,
@@ -188,16 +168,27 @@ class _LoginScreenState extends State<LoginScreen> {
                  },
 
 
-                child: AppButton(
-                 text: LocaleKeys.login.tr(),
-                  onTap: () {
-                    Navigator.pushNamedAndRemoveUntil(
-                      context,
-                      Routes.homeScreen,
-                          (route) => false,
-                    );
-                  },
-               ),
+                 child: AppButton(
+                   text: LocaleKeys.login.tr(),
+                   onTap: () {
+                     context.read<AuthCubit>().login(
+                       email: emailController.text.trim(),
+                       password: passwordController.text.trim(),
+                     );
+                   },
+                 ),
+
+
+               //  child: AppButton(
+               //   text: LocaleKeys.login.tr(),
+               //    onTap: () {
+               //      Navigator.pushNamedAndRemoveUntil(
+               //        context,
+               //        Routes.homeScreen,
+               //            (route) => false,
+               //      );
+               //    },
+               // ),
                ),
 
 
