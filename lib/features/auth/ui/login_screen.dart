@@ -161,7 +161,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                      Navigator.pushNamedAndRemoveUntil(
                        context,
-                       Routes.homeScreen,
+                       Routes.bottomNavBarScreen,
                            (route) => false,
                      );
                    }
@@ -177,18 +177,6 @@ class _LoginScreenState extends State<LoginScreen> {
                      );
                    },
                  ),
-
-
-               //  child: AppButton(
-               //   text: LocaleKeys.login.tr(),
-               //    onTap: () {
-               //      Navigator.pushNamedAndRemoveUntil(
-               //        context,
-               //        Routes.homeScreen,
-               //            (route) => false,
-               //      );
-               //    },
-               // ),
                ),
 
 
@@ -197,11 +185,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 Center(
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.push(
+                      Navigator.pushReplacementNamed(
                         context,
-                        MaterialPageRoute(
-                          builder: (_) => const RegisterScreen(),
-                        ),
+                        Routes.registerScreen,
                       );
                     },
                     child: RichText(

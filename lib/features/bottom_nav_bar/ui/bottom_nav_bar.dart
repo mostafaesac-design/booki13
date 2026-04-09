@@ -1,9 +1,11 @@
 import 'package:bookstore/core/theme/app_colors.dart';
 import 'package:bookstore/features/cart/ui/cart_screen.dart';
+import 'package:bookstore/features/home/cubit/home_cubit.dart';
 import 'package:bookstore/features/home/ui/home_screen.dart';
 import 'package:bookstore/features/profile/ui/profile_screen.dart';
 import 'package:bookstore/features/wishlist/ui/wishlist_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -19,7 +21,10 @@ class BottomNavBar extends StatefulWidget {
 class _BottomNavBarState extends State<BottomNavBar> {
   int activeIndex=0;
   List<Widget> screen =[
-    HomeScreen(),
+    BlocProvider(
+  create: (context) => HomeCubit()..getSlider(),
+  child: HomeScreen(),
+),
     WishlistScreen(),
     CartScreen(),
     ProfileScreen()
@@ -34,7 +39,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
            activeIndex=index;
          });
        },
-          // showUnselectedLabels: false,
+          // showUnselecte dLabels: false,
        items: [
         BottomNavigationBarItem(icon: SvgPicture.asset(Assets.icons.home1,
         colorFilter:ColorFilter.mode(activeIndex==0? AppColors.mainColor:Colors.black, BlendMode.srcIn) ,

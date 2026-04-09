@@ -18,8 +18,10 @@ class _AppStartScreenState extends State<AppStartScreen> {
 
   void _goNext() {
     Future.microtask(() {
-      if (AppConstants.token == null || AppConstants.token!.isEmpty) {
-        Navigator.pushReplacementNamed(context, Routes.welcomeScreen);
+      final token = AppConstants.token;
+
+      if (token == null || token.trim().isEmpty) {
+        Navigator.pushReplacementNamed(context, Routes.loginScreen);
       } else {
         Navigator.pushReplacementNamed(context, Routes.bottomNavBarScreen);
       }
