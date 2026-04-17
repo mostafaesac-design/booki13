@@ -24,6 +24,9 @@
 - 📦 My orders screen
 - 📱 Responsive UI using `flutter_screenutil`
 
+
+<img src="Screenshots/home_screen.png" width="250" />
+
 ---
 
 ## 🛠️ Tech Stack
