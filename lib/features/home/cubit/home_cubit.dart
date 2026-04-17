@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:bookstore/features/home/data/models/best_seller_response.dart';
 import 'package:bookstore/features/home/data/models/slider_model.dart';
 import 'package:bookstore/features/home/data/repo/home_repo.dart';
 import 'package:meta/meta.dart';
@@ -17,5 +18,26 @@ class HomeCubit extends Cubit<HomeState> {
       emit(SliderErrorState());
     }
   }
+
+Future<void> getBestSeller()async{
+    emit(SliderLoadingState());
+    final response=await HomeRepo.getBestSeller();
+    if(response!=null){
+      emit(BestSellerSuccessState(response.data?.products??[]));
+    }else{
+      emit(BestSellerErrorState());
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
 
 }

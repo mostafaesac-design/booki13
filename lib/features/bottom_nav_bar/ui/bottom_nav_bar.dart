@@ -22,7 +22,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   int activeIndex=0;
   List<Widget> screen =[
     BlocProvider(
-  create: (context) => HomeCubit()..getSlider(),
+  create: (context) => HomeCubit()..getSlider()..getBestSeller(),
   child: HomeScreen(),
 ),
     WishlistScreen(),

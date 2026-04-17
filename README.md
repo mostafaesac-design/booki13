@@ -1,73 +1,53 @@
-# Bookia
+# 📚 Bookia
 
-Bookia is a Flutter application for browsing books with a clean and modern user experience.  
-The app includes authentication flow, password recovery flow, and a scalable structure prepared for API integration and feature expansion.
+**Bookia** is a Flutter bookstore application that provides a smooth and modern user experience for browsing books, managing favorites, adding items to cart, updating profile details, and handling authentication flows.
 
-## Features
+---
 
-- Clean and responsive UI
-- Login and Register screens
-- Forgot Password flow
-- OTP Verification
-- Create New Password
-- Password Changed confirmation
-- Multi-language support
-- Reusable core widgets
-- Feature-based project structure
-- Ready for backend/API integration
+## ✨ Features
 
-## Tech Stack
+- 🌍 Multi-language support (English / Arabic)
+- 🔐 Authentication system
+    - Login
+    - Register
+    - Forgot Password
+    - OTP Verification
+    - Create New Password
+    - Password Changed
+- 🏠 Home screen with featured books
+- 📖 Product details screen
+- ❤️ Wishlist screen
+- 🛒 Cart screen
+- 👤 Profile screen
+- ✏️ Edit profile screen
+- 🔒 Change password screen
+- 📦 My orders screen
+- 📱 Responsive UI using `flutter_screenutil`
 
-- Flutter
-- Dart
-- flutter_screenutil
-- easy_localization
-- Reusable Core Components
-- Feature-first architecture
+---
 
-## Screenshots
+## 🛠️ Tech Stack
 
-### Welcome Screens
+- **Flutter**
+- **Dart**
+- **Cubit / Bloc**
+- **Dio**
+- **Easy Localization**
+- **Shared Preferences**
+- **Image Picker**
 
-<p align="center">
-  <img src="Screenshots/welcome.png" width="220"/>
-  <img src="Screenshots/welcome_ar.png" width="220"/>
-</p>
+---
 
-### Authentication
-
-<p align="center">
-  <img src="Screenshots/login.png" width="220"/>
-  <img src="Screenshots/register.png" width="220"/>
-</p>
-
-### Password Recovery Flow
-
-<p align="center">
-  <img src="Screenshots/forgot_password.png" width="220"/>
-  <img src="Screenshots/otp_verification.png" width="220"/>
-  <img src="Screenshots/create_new_password.png" width="220"/>
-  <img src="Screenshots/password_changed.png" width="220"/>
-</p>
-
-### More Screens
-
-<p align="center">
-  <img src="Screenshots/aye.png" width="220"/>
-  <img src="Screenshots/data.png" width="220"/>
-</p>
-
-## Project Structure
+## 📂 Project Structure
 
 ```bash
-lib/
-├── core/
-│   ├── theme/
-│   └── widgets/
-├── features/
-│   ├── auth/
-│   │   ├── cubit/
-│   │   ├── data/
-│   │   └── ui/
-│   └── welcome/
-└── generated/
+lib
+├── core
+├── features
+│   ├── auth
+│   ├── home
+│   ├── wishlist
+│   ├── cart
+│   ├── profile
+│   └── order
+└── main.dart

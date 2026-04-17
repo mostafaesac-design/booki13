@@ -25,5 +25,5 @@ void main() async{
 // flutter pub run build_runner build --delete-conflicting-outputs
 // flutter pub add flutter_native_splash
 // flutter pub add flutter_screenutil
-
-
+// flutter pub add cached_network_image
+// flutter pub add skeletonizer

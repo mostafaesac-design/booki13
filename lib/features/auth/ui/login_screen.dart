@@ -120,23 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 SizedBox(height: 30.h),
                BlocListener<AuthCubit, AuthState>(
-
-                 // listener: (context, state) {
-                 //   if (state is AuthLoadingState){
-                 //     showDialog(context: context, builder: (context)=>
-                 //         Center(child: CircularProgressIndicator(
-                 //         )));
-                 //   }else if(state is AuthErrorState){
-                 //      Navigator.pop(context);
-                 //     showDialog(context: context, builder:(context)=> AlertDialog(
-                 //       title: Text("Error"),
-                 //       content: Text("hhhhhhh"),
-                 //
-                 //     ));
-                 //   }else if(state is AuthSuccessState){
-                 //   }
-                 //  },
-
+                 
 
                  listener: (context, state) {
                    if (state is AuthLoadingState) {

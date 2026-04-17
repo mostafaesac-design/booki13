@@ -1,9 +1,11 @@
 import 'package:bookstore/core/theme/app_colors.dart';
+import 'package:bookstore/core/widgets/custom_network_image.dart';
 import 'package:bookstore/features/home/cubit/home_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class HomeSlider extends StatefulWidget {
@@ -19,9 +21,17 @@ class _HomeSliderState extends State<HomeSlider> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HomeCubit, HomeState>(
+      buildWhen:(prev,current)=> current is SliderLoadingState|| current is SliderErrorState|| current is SliderSuccessState,
   builder: (context, state) {
     if(state is SliderLoadingState){
-      return CircularProgressIndicator();
+      return Skeletonizer(
+        enabled: true,
+        child: Container(
+          height: 150.h,
+            width: double.infinity,
+           color: AppColors.grayColor,
+        ),
+      );
     }else if(state is SliderSuccessState){
       return Column(
         children: [
@@ -43,9 +53,9 @@ class _HomeSliderState extends State<HomeSlider> {
                       margin: EdgeInsets.symmetric(horizontal: 5.w),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(16.r),
-                        child: Image.network(
-                          i.image ?? "",
-                          fit: BoxFit.cover,
+                        child: CustomNetworkImage(
+                          urlImage: i.image??"",
+                          width: double.infinity,
                         ),
                       ),
                   );

@@ -9,6 +9,8 @@ class AppColors {
  static const Color darkGrayColor = Color(0xFF8391A1);
  static const Color subTitleColor = Color(0xFF6B7280);
  static const Color titleColor = Color(0xFF1E1E1E);
+ static const Color productBackgroundColor = Color(0xffF5EFE1);
+
 
 
 }
