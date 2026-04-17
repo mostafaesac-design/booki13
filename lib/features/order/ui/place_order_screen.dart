@@ -1,7 +1,13 @@
 import 'package:bookstore/features/home/ui/home_screen.dart';
 import 'package:bookstore/features/order/ui/success_order_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../cart/cubit/cart_cubit.dart';
+import '../../profile/cubit/order_cubit.dart';
+import '../../profile/data/models/order_model.dart';
 
 class PlaceOrderScreen extends StatefulWidget {
   final double totalPrice;
@@ -66,6 +72,20 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
 
   void submitOrder() {
     if (formKey.currentState!.validate()) {
+      final order = OrderModel(
+        orderNumber: DateTime.now().millisecondsSinceEpoch.toString(),
+        fullName: fullNameController.text.trim(),
+        email: emailController.text.trim(),
+        address: addressController.text.trim(),
+        phone: phoneController.text.trim(),
+        governorate: selectedGovernorate ?? '',
+        date: DateFormat('dd/MM/yyyy').format(DateTime.now()),
+        totalPrice: widget.totalPrice,
+      );
+
+      context.read<OrderCubit>().addOrder(order);
+      context.read<CartCubit>().clearCart();
+
       Navigator.push(
         context,
         MaterialPageRoute(

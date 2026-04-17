@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'features/cart/cubit/cart_cubit.dart';
+import 'features/profile/cubit/order_cubit.dart';
 import 'features/profile/cubit/profile_cubit.dart';
 import 'features/wishlist/cubit/wishlist_cubit.dart';
 
@@ -23,6 +24,9 @@ class BookStoreApp extends StatelessWidget {
         ),
         BlocProvider<ProfileCubit>(
           create: (_) => ProfileCubit(),
+        ),
+        BlocProvider<OrderCubit>(
+          create: (_) => OrderCubit(),
         ),
       ],
       child: ScreenUtilInit(

@@ -74,6 +74,14 @@ class CartCubit extends Cubit<CartState> {
     }
   }
 
+  void clearCart() {
+    emit(const CartState(cartItems: []));
+  }
+
+
+
+
+
   bool isProductInCart(int productId) {
     return state.cartItems.any((item) => item.product.id == productId);
   }
