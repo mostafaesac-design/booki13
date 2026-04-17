@@ -24,29 +24,42 @@
 - 📦 My orders screen
 - 📱 Responsive UI using `flutter_screenutil`
 
+## 📸 Screenshots
 
-## Screenshots
+<p align="center">
+  <img src="Screenshots/home_screen.png" width="200"/>
+  <img src="Screenshots/product_details_screen.png" width="200"/>
+  <img src="Screenshots/wishlist_screen.png" width="200"/>
+</p>
 
-### Home
-![Home Screen](Screenshots/home_screen.png)
+<p align="center">
+  <img src="Screenshots/cart_screen.png" width="200"/>
+  <img src="Screenshots/profile_screen.png" width="200"/>
+  <img src="Screenshots/edit_profile_screen.png" width="200"/>
+</p>
 
-### Wishlist
-![Wishlist Screen](Screenshots/wishlist_screen.png)
+<p align="center">
+  <img src="Screenshots/change_password_screen.png" width="200"/>
+  <img src="Screenshots/my_orders_screen.png" width="200"/>
+  <img src="Screenshots/login.png" width="200"/>
+</p>
 
-### Cart
-![Cart Screen](Screenshots/cart_screen.png)
+<p align="center">
+  <img src="Screenshots/register.png" width="200"/>
+  <img src="Screenshots/forgot_password.png" width="200"/>
+  <img src="Screenshots/otp_verification.png" width="200"/>
+</p>
 
-### Product Details
-![Product Details Screen](Screenshots/product_details_screen.png)
+<p align="center">
+  <img src="Screenshots/create_new_password.png" width="200"/>
+  <img src="Screenshots/password_changed.png" width="200"/>
+  <img src="Screenshots/welcome.png" width="200"/>
+</p>
 
-### Profile
-![Profile Screen](Screenshots/profile_screen.png)
+<p align="center">
+  <img src="Screenshots/welcome_ar.png" width="200"/>
+</p>
 
-### Edit Profile
-![Edit Profile Screen](Screenshots/edit_profile_screen.png)
-
-### Change Password
-![Change Password Screen](Screenshots/change_password_screen.png)
 ---
 
 ## 🛠️ Tech Stack
