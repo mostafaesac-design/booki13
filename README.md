@@ -25,8 +25,28 @@
 - 📱 Responsive UI using `flutter_screenutil`
 
 
-<img src="Screenshots/home_screen.png" width="250" />
+## Screenshots
 
+### Home
+![Home Screen](Screenshots/home_screen.png)
+
+### Wishlist
+![Wishlist Screen](Screenshots/wishlist_screen.png)
+
+### Cart
+![Cart Screen](Screenshots/cart_screen.png)
+
+### Product Details
+![Product Details Screen](Screenshots/product_details_screen.png)
+
+### Profile
+![Profile Screen](Screenshots/profile_screen.png)
+
+### Edit Profile
+![Edit Profile Screen](Screenshots/edit_profile_screen.png)
+
+### Change Password
+![Change Password Screen](Screenshots/change_password_screen.png)
 ---
 
 ## 🛠️ Tech Stack
