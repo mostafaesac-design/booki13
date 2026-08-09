@@ -1,5 +1,6 @@
 class AppConstants {
+  AppConstants._();
 
-
- static String? token;
+  static const String tokenKey = 'token';
+  static String? token;
 }
