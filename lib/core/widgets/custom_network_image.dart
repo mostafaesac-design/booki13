@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:bookstore/core/theme/app_colors.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 class CustomNetworkImage extends StatelessWidget {
   final String urlImage;
@@ -16,9 +17,9 @@ class CustomNetworkImage extends StatelessWidget {
       imageBuilder: (context, imageProvider) => Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-              image: imageProvider,
-              fit: BoxFit.cover,
-              ),
+            image: imageProvider,
+            fit: BoxFit.cover,
+          ),
         ),
       ),
       placeholder: (context, url) => Skeletonizer(
@@ -26,7 +27,7 @@ class CustomNetworkImage extends StatelessWidget {
         child: Container(
           height: height,
           width: width,
-          color: Colors.grey,
+          color: AppColors.hint,
         ),
       ),
       errorWidget: (context, url, error) => Icon(Icons.error),

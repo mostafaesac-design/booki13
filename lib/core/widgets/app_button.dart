@@ -20,15 +20,17 @@ class AppButton extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 19.h),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          border:backgroundColor==null?null:Border.all(
-            color: Colors.black
-          ) ,
-          borderRadius: BorderRadius.circular(25.r),
-          color: backgroundColor??AppColors.mainColor
+            border:backgroundColor==null?null:Border.all(
+                color: AppColors.iconPrimary
+            ) ,
+            borderRadius: BorderRadius.circular(25.r),
+            color: backgroundColor ?? AppColors.primary
         ),
         child: Text(text,style: TextStyle(
           fontSize: 15.sp,
-          color:backgroundColor==null?Colors.white:Colors.black,
+          color: backgroundColor == null
+              ? AppColors.textOnPrimary
+              : AppColors.textPrimary,
 
         ),),
       ),
