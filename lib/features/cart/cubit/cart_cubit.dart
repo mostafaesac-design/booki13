@@ -1,88 +1,119 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bookstore/features/cart/data/models/cart_item_model.dart';
+import 'package:bookstore/core/networking/api_error_handler.dart';
+import 'package:bookstore/features/cart/data/repo/cart_repo.dart';
 import 'package:bookstore/features/home/data/models/best_seller_response.dart';
-
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'cart_state.dart';
 
 class CartCubit extends Cubit<CartState> {
-  CartCubit() : super(const CartState());
+  CartCubit({CartRepo? repo})
+    : _repo = repo ?? CartRepo(),
+      super(const CartState());
+  final CartRepo _repo;
+  final Set<int> _pendingProducts = {};
 
-  void addToCart(Product product) {
-    final currentItems = List<CartItemModel>.from(state.cartItems);
-
-    final index = currentItems.indexWhere(
-          (item) => item.product.id == product.id,
-    );
-
-    if (index != -1) {
-      currentItems[index] = currentItems[index].copyWith(
-        quantity: currentItems[index].quantity + 1,
-      );
-    } else {
-      currentItems.add(
-        CartItemModel(
-          product: product,
-          quantity: 1,
+  Future<void> loadCart() async {
+    if (state.isLoading) return;
+    emit(state.copyWith(isLoading: true, clearError: true));
+    try {
+      _apply(await _repo.getCart());
+    } catch (error) {
+      emit(
+        state.copyWith(
+          isLoading: false,
+          error: ApiErrorHandler.getMessage(error),
         ),
       );
     }
-
-    emit(CartState(cartItems: currentItems));
   }
 
-  void removeFromCart(int productId) {
-    final updatedItems = state.cartItems
-        .where((item) => item.product.id != productId)
-        .toList();
-
-    emit(CartState(cartItems: updatedItems));
-  }
-
-  void increaseQuantity(int productId) {
-    final currentItems = List<CartItemModel>.from(state.cartItems);
-    final index = currentItems.indexWhere(
-          (item) => item.product.id == productId,
-    );
-
-    if (index != -1) {
-      currentItems[index] = currentItems[index].copyWith(
-        quantity: currentItems[index].quantity + 1,
+  Future<void> addToCart(Product product) async {
+    final id = product.id;
+    if (id == null || !_pendingProducts.add(id)) return;
+    emit(state.copyWith(isLoading: true, clearError: true));
+    try {
+      _apply(await _repo.add(id));
+    } catch (error) {
+      emit(
+        state.copyWith(
+          isLoading: false,
+          error: ApiErrorHandler.getMessage(error),
+        ),
       );
-
-      emit(CartState(cartItems: currentItems));
+    } finally {
+      _pendingProducts.remove(id);
     }
   }
 
-  void decreaseQuantity(int productId) {
-    final currentItems = List<CartItemModel>.from(state.cartItems);
-    final index = currentItems.indexWhere(
-          (item) => item.product.id == productId,
-    );
+  Future<void> removeFromCart(int productId) async {
+    final item = state.cartItems
+        .where((item) => item.product.id == productId)
+        .firstOrNull;
+    if (item?.itemId == null || !_pendingProducts.add(productId)) return;
+    emit(state.copyWith(isLoading: true, clearError: true));
+    try {
+      _apply(await _repo.remove(item!.itemId!));
+    } catch (error) {
+      emit(
+        state.copyWith(
+          isLoading: false,
+          error: ApiErrorHandler.getMessage(error),
+        ),
+      );
+    } finally {
+      _pendingProducts.remove(productId);
+    }
+  }
 
-    if (index != -1) {
-      final currentItem = currentItems[index];
+  Future<void> increaseQuantity(int productId) => _changeQuantity(productId, 1);
+  Future<void> decreaseQuantity(int productId) =>
+      _changeQuantity(productId, -1);
 
-      if (currentItem.quantity > 1) {
-        currentItems[index] = currentItem.copyWith(
-          quantity: currentItem.quantity - 1,
+  Future<void> _changeQuantity(int productId, int delta) async {
+    final item = state.cartItems
+        .where((item) => item.product.id == productId)
+        .firstOrNull;
+    if (item == null ||
+        item.itemId == null ||
+        !_pendingProducts.add(productId)) {
+      return;
+    }
+    final quantity = item.quantity + delta;
+    try {
+      emit(state.copyWith(isLoading: true, clearError: true));
+      if (quantity < 1) {
+        _apply(await _repo.remove(item.itemId!));
+      } else if (quantity <= (item.product.stock ?? quantity)) {
+        _apply(
+          await _repo.update(cartItemId: item.itemId!, quantity: quantity),
         );
       } else {
-        currentItems.removeAt(index);
+        emit(
+          state.copyWith(
+            isLoading: false,
+            error: 'Requested quantity is not available.',
+          ),
+        );
       }
-
-      emit(CartState(cartItems: currentItems));
+    } catch (error) {
+      emit(
+        state.copyWith(
+          isLoading: false,
+          error: ApiErrorHandler.getMessage(error),
+        ),
+      );
+    } finally {
+      _pendingProducts.remove(productId);
     }
   }
 
-  void clearCart() {
-    emit(const CartState(cartItems: []));
-  }
-
-
-
-
-
-  bool isProductInCart(int productId) {
-    return state.cartItems.any((item) => item.product.id == productId);
-  }
+  void clearCart() => emit(const CartState());
+  bool isProductInCart(int productId) =>
+      state.cartItems.any((item) => item.product.id == productId);
+  void _apply(CartSnapshot snapshot) => emit(
+    CartState(
+      cartItems: snapshot.items,
+      serverTotal: snapshot.total,
+      isLoading: false,
+    ),
+  );
 }

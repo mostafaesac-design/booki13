@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:bookstore/core/theme/app_colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../cubit/cart_cubit.dart';
@@ -12,15 +13,31 @@ class CartScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('My Cart'),
         centerTitle: true,
       ),
       body: BlocBuilder<CartCubit, CartState>(
         builder: (context, state) {
-          if (state.cartItems.isEmpty) {
-            return const Center(
-              child: Text('Cart is empty'),
+          if (state.isLoading && state.cartItems.isEmpty) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (state.error != null && state.cartItems.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(state.error!, textAlign: TextAlign.center),
+                  TextButton(
+                    onPressed: () => context.read<CartCubit>().loadCart(),
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
             );
+          }
+          if (state.cartItems.isEmpty) {
+            return const Center(child: Text('Cart is empty'));
           }
 
           return Padding(
@@ -30,7 +47,8 @@ class CartScreen extends StatelessWidget {
                 Expanded(
                   child: ListView.separated(
                     itemCount: state.cartItems.length,
-                    separatorBuilder: (context, index) => SizedBox(height: 12.h),
+                    separatorBuilder: (context, index) =>
+                        SizedBox(height: 12.h),
                     itemBuilder: (context, index) {
                       final item = state.cartItems[index];
 
@@ -40,10 +58,7 @@ class CartScreen extends StatelessWidget {
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(14.r),
                           boxShadow: [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 4.r,
-                            ),
+                            BoxShadow(color: Colors.black12, blurRadius: 4.r),
                           ],
                         ),
                         child: Row(
@@ -61,7 +76,9 @@ class CartScreen extends StatelessWidget {
                                     height: 95.h,
                                     color: Colors.grey.shade300,
                                     alignment: Alignment.center,
-                                    child: const Icon(Icons.image_not_supported),
+                                    child: const Icon(
+                                      Icons.image_not_supported,
+                                    ),
                                   );
                                 },
                               ),
@@ -94,7 +111,9 @@ class CartScreen extends StatelessWidget {
                                     children: [
                                       GestureDetector(
                                         onTap: () {
-                                          context.read<CartCubit>().increaseQuantity(
+                                          context
+                                              .read<CartCubit>()
+                                              .increaseQuantity(
                                             item.product.id ?? 0,
                                           );
                                         },
@@ -102,9 +121,14 @@ class CartScreen extends StatelessWidget {
                                           padding: EdgeInsets.all(6.r),
                                           decoration: BoxDecoration(
                                             color: Colors.grey.shade200,
-                                            borderRadius: BorderRadius.circular(8.r),
+                                            borderRadius: BorderRadius.circular(
+                                              8.r,
+                                            ),
                                           ),
-                                          child: const Icon(Icons.add, size: 18),
+                                          child: const Icon(
+                                            Icons.add,
+                                            size: 18,
+                                          ),
                                         ),
                                       ),
                                       SizedBox(width: 10.w),
@@ -118,7 +142,9 @@ class CartScreen extends StatelessWidget {
                                       SizedBox(width: 10.w),
                                       GestureDetector(
                                         onTap: () {
-                                          context.read<CartCubit>().decreaseQuantity(
+                                          context
+                                              .read<CartCubit>()
+                                              .decreaseQuantity(
                                             item.product.id ?? 0,
                                           );
                                         },
@@ -126,9 +152,14 @@ class CartScreen extends StatelessWidget {
                                           padding: EdgeInsets.all(6.r),
                                           decoration: BoxDecoration(
                                             color: Colors.grey.shade200,
-                                            borderRadius: BorderRadius.circular(8.r),
+                                            borderRadius: BorderRadius.circular(
+                                              8.r,
+                                            ),
                                           ),
-                                          child: const Icon(Icons.remove, size: 18),
+                                          child: const Icon(
+                                            Icons.remove,
+                                            size: 18,
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -189,14 +220,13 @@ class CartScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => PlaceOrderScreen(
-                            totalPrice: state.totalPrice,
-                          ),
+                          builder: (_) =>
+                              PlaceOrderScreen(totalPrice: state.totalPrice),
                         ),
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xffC7A84B),
+                      backgroundColor: AppColors.primaryAction,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12.r),
                       ),
