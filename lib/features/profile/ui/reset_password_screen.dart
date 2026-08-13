@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:bookstore/core/theme/app_colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:bookstore/core/widgets/app_page_header.dart';
+import 'package:bookstore/core/widgets/app_button.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../cubit/profile_cubit.dart';
 
@@ -28,10 +32,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     super.dispose();
   }
 
-  InputDecoration buildInput(
-      String hint, {
-        Widget? suffixIcon,
-      }) {
+  InputDecoration buildInput(String hint, {Widget? suffixIcon}) {
     return InputDecoration(
       hintText: hint,
       filled: true,
@@ -51,36 +52,17 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffF9F5FA),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 14.h),
           child: Column(
             children: [
-              Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Container(
-                      height: 40.h,
-                      width: 40.w,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12.r),
-                        border: Border.all(color: Colors.grey.shade300),
-                      ),
-                      child: const Icon(Icons.arrow_back_ios_new, size: 18),
-                    ),
-                  ),
-                ],
-              ),
+              AppPageHeader(title: 'change_password'.tr()),
               SizedBox(height: 60.h),
               Text(
                 'New Password',
-                style: TextStyle(
-                  fontSize: 32.sp,
-                  fontWeight: FontWeight.w700,
-                ),
+                style: TextStyle(fontSize: 32.sp, fontWeight: FontWeight.w700),
               ),
               SizedBox(height: 30.h),
               TextField(
@@ -94,7 +76,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         obscure1 = !obscure1;
                       });
                     },
-                    icon: Icon(obscure1 ? Icons.visibility_off : Icons.visibility),
+                    icon: Icon(
+                      obscure1 ? Icons.visibility_off : Icons.visibility,
+                    ),
                   ),
                 ),
               ),
@@ -110,7 +94,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         obscure2 = !obscure2;
                       });
                     },
-                    icon: Icon(obscure2 ? Icons.visibility_off : Icons.visibility),
+                    icon: Icon(
+                      obscure2 ? Icons.visibility_off : Icons.visibility,
+                    ),
                   ),
                 ),
               ),
@@ -126,48 +112,91 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         obscure3 = !obscure3;
                       });
                     },
-                    icon: Icon(obscure3 ? Icons.visibility_off : Icons.visibility),
+                    icon: Icon(
+                      obscure3 ? Icons.visibility_off : Icons.visibility,
+                    ),
                   ),
                 ),
               ),
               const Spacer(),
-              SizedBox(
-                width: double.infinity,
-                height: 54.h,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    final result = await context.read<ProfileCubit>().updatePassword(
-                      currentPassword: currentPasswordController.text.trim(),
-                      newPassword: newPasswordController.text.trim(),
-                      confirmPassword: confirmPasswordController.text.trim(),
-                    );
+              AppButton(
+                text: 'change_password'.tr(),
+                onTap: () async {
+                  FocusScope.of(context).unfocus();
 
-                    if (result) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Password updated successfully')),
+                  final currentPassword = currentPasswordController.text.trim();
+                  final newPassword = newPasswordController.text.trim();
+                  final confirmPassword = confirmPasswordController.text.trim();
+
+                  if (currentPassword.isEmpty ||
+                      newPassword.isEmpty ||
+                      confirmPassword.isEmpty) {
+                    ScaffoldMessenger.of(context)
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(
+                        const SnackBar(
+                          content: Text('Please complete all password fields.'),
+                        ),
                       );
-                      Navigator.pop(context);
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Wrong current password or confirm failed')),
+                    return;
+                  }
+
+                  if (newPassword.length < 8) {
+                    ScaffoldMessenger.of(context)
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'New password must contain at least 8 characters.',
+                          ),
+                        ),
                       );
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xffC7A84B),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14.r),
-                    ),
-                  ),
-                  child: Text(
-                    'Update Password',
-                    style: TextStyle(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
+                    return;
+                  }
+
+                  if (newPassword != confirmPassword) {
+                    ScaffoldMessenger.of(context)
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Password confirmation does not match.',
+                          ),
+                        ),
+                      );
+                    return;
+                  }
+
+                  final result = await context
+                      .read<ProfileCubit>()
+                      .updatePassword(
+                        currentPassword: currentPassword,
+                        newPassword: newPassword,
+                        confirmPassword: confirmPassword,
+                      );
+
+                  if (!context.mounted) return;
+
+                  if (result) {
+                    ScaffoldMessenger.of(context)
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(
+                        SnackBar(
+                          content: const Text('Password updated successfully.'),
+                        ),
+                      );
+                  } else {
+                    ScaffoldMessenger.of(context)
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'The current password is incorrect or the update failed.',
+                          ),
+                        ),
+                      );
+                  }
+                },
               ),
             ],
           ),

@@ -1,8 +1,12 @@
 import 'dart:io';
+import 'package:bookstore/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:bookstore/core/widgets/app_page_header.dart';
+import 'package:bookstore/core/widgets/app_button.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../cubit/profile_cubit.dart';
 
@@ -19,6 +23,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController addressController;
 
   String imagePath = '';
+
+  ImageProvider<Object>? get profileImage {
+    if (imagePath.isEmpty) return null;
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+      return NetworkImage(imagePath);
+    }
+    return FileImage(File(imagePath));
+  }
 
   @override
   void initState() {
@@ -42,11 +54,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final picker = ImagePicker();
     final file = await picker.pickImage(source: ImageSource.gallery);
 
-    if (file != null) {
-      setState(() {
-        imagePath = file.path;
-      });
-    }
+    if (!mounted || file == null) return;
+
+    setState(() {
+      imagePath = file.path;
+    });
   }
 
   InputDecoration buildInput(String hint) {
@@ -68,49 +80,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffF9F5FA),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 14.h),
           child: Column(
             children: [
-              Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Container(
-                      height: 40.h,
-                      width: 40.w,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12.r),
-                        border: Border.all(color: Colors.grey.shade300),
-                      ),
-                      child: const Icon(Icons.arrow_back_ios_new, size: 18),
-                    ),
-                  ),
-                  Expanded(
-                    child: Center(
-                      child: Text(
-                        'Edit Profile',
-                        style: TextStyle(
-                          fontSize: 26.sp,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 40.w),
-                ],
-              ),
+              AppPageHeader(title: 'edit_profile'.tr()),
               SizedBox(height: 28.h),
               Stack(
                 children: [
                   CircleAvatar(
                     radius: 58.r,
                     backgroundColor: Colors.grey.shade300,
-                    backgroundImage:
-                    imagePath.isNotEmpty ? FileImage(File(imagePath)) : null,
+                    backgroundImage: profileImage,
                     child: imagePath.isEmpty
                         ? Icon(Icons.person, size: 50.sp, color: Colors.white)
                         : null,
@@ -122,8 +105,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       onTap: pickImage,
                       child: CircleAvatar(
                         radius: 16.r,
-                        backgroundColor: const Color(0xffC7A84B),
-                        child: Icon(Icons.camera_alt, size: 18.sp, color: Colors.white),
+                        backgroundColor: AppColors.primaryAction,
+                        child: Icon(
+                          Icons.camera_alt,
+                          size: 18.sp,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
@@ -145,34 +132,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 decoration: buildInput('Address'),
               ),
               const Spacer(),
-              SizedBox(
-                width: double.infinity,
-                height: 54.h,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    await context.read<ProfileCubit>().updateProfile(
-                      name: nameController.text.trim(),
-                      phone: phoneController.text.trim(),
-                      address: addressController.text.trim(),
-                      imagePath: imagePath,
-                    );
+              AppButton(
+                text: 'update_profile'.tr(),
+                onTap: () async {
+                  final updated = await context
+                      .read<ProfileCubit>()
+                      .updateProfile(
+                        name: nameController.text.trim(),
+                        phone: phoneController.text.trim(),
+                        address: addressController.text.trim(),
+                        imagePath: imagePath,
+                      );
+
+                  if (!context.mounted) return;
+
+                  if (updated) {
                     Navigator.pop(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xffC7A84B),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14.r),
-                    ),
-                  ),
-                  child: Text(
-                    'Update Profile',
-                    style: TextStyle(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
+                  } else {
+                    final error =
+                        context.read<ProfileCubit>().state.error ??
+                        'Update failed.';
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text(error)));
+                  }
+                },
               ),
             ],
           ),

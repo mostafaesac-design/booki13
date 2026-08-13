@@ -1,8 +1,13 @@
+import 'package:bookstore/core/theme/app_colors.dart';
+import 'package:bookstore/core/widgets/app_page_header.dart';
+import 'package:bookstore/features/order_details/cubit/order_details_cubit.dart';
+import 'package:bookstore/features/order_details/ui/order_details_screen.dart';
+import 'package:bookstore/features/profile/cubit/order_cubit.dart';
+import 'package:bookstore/features/profile/cubit/order_state.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../cubit/order_cubit.dart';
-import '../cubit/order_state.dart';
 
 class MyOrdersScreen extends StatelessWidget {
   const MyOrdersScreen({super.key});
@@ -10,98 +15,114 @@ class MyOrdersScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffF9F5FA),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 14.h),
           child: Column(
             children: [
-              Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Container(
-                      height: 40.h,
-                      width: 40.w,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12.r),
-                        border: Border.all(color: Colors.grey.shade300),
-                      ),
-                      child: const Icon(Icons.arrow_back_ios_new, size: 18),
-                    ),
-                  ),
-                  Expanded(
-                    child: Center(
-                      child: Text(
-                        'My Orders',
-                        style: TextStyle(
-                          fontSize: 26.sp,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 40.w),
-                ],
-              ),
+              AppPageHeader(title: 'my_orders'.tr()),
               SizedBox(height: 24.h),
               Expanded(
                 child: BlocBuilder<OrderCubit, OrderState>(
                   builder: (context, state) {
-                    if (state.orders.isEmpty) {
-                      return const Center(
-                        child: Text('No orders yet'),
+                    if (state.isLoadingOrders && state.orders.isEmpty) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (state.ordersError != null && state.orders.isEmpty) {
+                      return Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              state.ordersError!,
+                              textAlign: TextAlign.center,
+                            ),
+                            TextButton(
+                              onPressed: () =>
+                                  context.read<OrderCubit>().getOrders(),
+                              child: const Text('Retry'),
+                            ),
+                          ],
+                        ),
                       );
                     }
-
+                    if (state.orders.isEmpty) {
+                      return Center(child: Text('no_orders'.tr()));
+                    }
                     return ListView.separated(
                       itemCount: state.orders.length,
-                      separatorBuilder: (_, __) => SizedBox(height: 14.h),
+                      separatorBuilder: (_, _) => SizedBox(height: 14.h),
                       itemBuilder: (context, index) {
                         final order = state.orders[index];
-
-                        return Container(
-                          padding: EdgeInsets.all(16.w),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(14.r),
+                        return InkWell(
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => BlocProvider(
+                                create: (_) =>
+                                    OrderDetailsCubit(orderId: order.id),
+                                child: const OrderDetailsScreen(),
+                              ),
+                            ),
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      'Order No${order.orderNumber}',
-                                      style: TextStyle(
-                                        fontSize: 18.sp,
-                                        fontWeight: FontWeight.w600,
+                          borderRadius: BorderRadius.circular(14.r),
+                          child: Container(
+                            padding: EdgeInsets.all(16.w),
+                            decoration: BoxDecoration(
+                              color: AppColors.surface,
+                              borderRadius: BorderRadius.circular(14.r),
+                              border: Border.all(color: AppColors.borderLight),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        '${'order_number'.tr()} ${order.orderNumber}',
+                                        style: TextStyle(
+                                          fontSize: 17.sp,
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Text(
-                                    order.date,
-                                    style: TextStyle(
-                                      fontSize: 14.sp,
-                                      color: Colors.grey,
+                                    Icon(
+                                      Icons.arrow_forward_ios_rounded,
+                                      size: 16.sp,
                                     ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 12.h),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: Text(
-                                  'Total Amount: \$${order.totalPrice.toStringAsFixed(2)}',
+                                  ],
+                                ),
+                                SizedBox(height: 10.h),
+                                Text(
+                                  order.date,
                                   style: TextStyle(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14.sp,
+                                    color: AppColors.textSecondary,
                                   ),
                                 ),
-                              ),
-                            ],
+                                SizedBox(height: 6.h),
+                                Text(
+                                  order.status,
+                                  style: TextStyle(
+                                    fontSize: 13.sp,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                                SizedBox(height: 8.h),
+                                Align(
+                                  alignment: AlignmentDirectional.centerEnd,
+                                  child: Text(
+                                    '${'total_amount'.tr()}: \$${order.totalPrice.toStringAsFixed(2)}',
+                                    style: TextStyle(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         );
                       },
