@@ -34,8 +34,9 @@ class DioService {
           handler.next(options);
         },
         onError: (error, handler) async {
-          final wasAuthenticated =
-          error.requestOptions.headers.containsKey('Authorization');
+          final wasAuthenticated = error.requestOptions.headers.containsKey(
+            'Authorization',
+          );
           if (error.response?.statusCode == 401 && wasAuthenticated) {
             AppConstants.token = null;
             final prefs = await SharedPreferences.getInstance();
