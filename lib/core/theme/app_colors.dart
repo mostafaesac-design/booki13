@@ -36,20 +36,4 @@ abstract final class AppColors {
   static const Color error = Color(0xFFF44336);
   static const Color errorBackground = Color(0xFFFFEBEE);
   static const Color warning = Color(0xFFFFA000);
-
-  // Compatibility aliases. Remove them after all features use semantic names.
-  @Deprecated('Use primary instead')
-  static const Color mainColor = primary;
-  @Deprecated('Use border instead')
-  static const Color borderColor = border;
-  @Deprecated('Use inputBackground instead')
-  static const Color grayColor = inputBackground;
-  @Deprecated('Use hint instead')
-  static const Color darkGrayColor = hint;
-  @Deprecated('Use textSecondary instead')
-  static const Color subTitleColor = textSecondary;
-  @Deprecated('Use textPrimary instead')
-  static const Color titleColor = textPrimary;
-  @Deprecated('Use productBackground instead')
-  static const Color productBackgroundColor = productBackground;
 }

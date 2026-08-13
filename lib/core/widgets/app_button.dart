@@ -2,14 +2,17 @@ import 'package:bookstore/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-
 class AppButton extends StatelessWidget {
-
   final Color? backgroundColor;
   final String text;
   final VoidCallback? onTap;
 
-  const AppButton({super.key,this.backgroundColor, required this.text,  this.onTap});
+  const AppButton({
+    super.key,
+    this.backgroundColor,
+    required this.text,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,19 +23,21 @@ class AppButton extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 19.h),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-            border:backgroundColor==null?null:Border.all(
-                color: AppColors.iconPrimary
-            ) ,
-            borderRadius: BorderRadius.circular(25.r),
-            color: backgroundColor ?? AppColors.primary
+          border: backgroundColor == null
+              ? null
+              : Border.all(color: AppColors.iconPrimary),
+          borderRadius: BorderRadius.circular(25.r),
+          color: backgroundColor ?? AppColors.primary,
         ),
-        child: Text(text,style: TextStyle(
-          fontSize: 15.sp,
-          color: backgroundColor == null
-              ? AppColors.textOnPrimary
-              : AppColors.textPrimary,
-
-        ),),
+        child: Text(
+          text,
+          style: TextStyle(
+            fontSize: 15.sp,
+            color: backgroundColor == null
+                ? AppColors.textOnPrimary
+                : AppColors.textPrimary,
+          ),
+        ),
       ),
     );
   }
