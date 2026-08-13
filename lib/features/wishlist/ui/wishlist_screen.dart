@@ -12,15 +12,32 @@ class WishlistScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Wishlist'),
         centerTitle: true,
       ),
       body: BlocBuilder<WishlistCubit, WishlistState>(
         builder: (context, state) {
-          if (state.wishlistItems.isEmpty) {
-            return const Center(
-              child: Text('Wishlist is empty'),
+          if (state.isLoading && state.wishlistItems.isEmpty) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (state.error != null && state.wishlistItems.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(state.error!, textAlign: TextAlign.center),
+                  TextButton(
+                    onPressed: () =>
+                        context.read<WishlistCubit>().loadWishlist(),
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
             );
+          }
+          if (state.wishlistItems.isEmpty) {
+            return const Center(child: Text('Wishlist is empty'));
           }
 
           return GridView.builder(
@@ -41,10 +58,7 @@ class WishlistScreen extends StatelessWidget {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12.r),
                   boxShadow: [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 4.r,
-                    ),
+                    BoxShadow(color: Colors.black12, blurRadius: 4.r),
                   ],
                 ),
                 child: Column(
@@ -58,7 +72,8 @@ class WishlistScreen extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) => DetailsScreen(product: product),
+                                  builder: (_) =>
+                                      DetailsScreen(product: product),
                                 ),
                               );
                             },
@@ -72,7 +87,9 @@ class WishlistScreen extends StatelessWidget {
                                   return Container(
                                     color: Colors.grey.shade300,
                                     alignment: Alignment.center,
-                                    child: const Icon(Icons.image_not_supported),
+                                    child: const Icon(
+                                      Icons.image_not_supported,
+                                    ),
                                   );
                                 },
                               ),
@@ -81,18 +98,21 @@ class WishlistScreen extends StatelessWidget {
                           Positioned(
                             top: 5.h,
                             right: 5.w,
-                            child: GestureDetector(
-                              onTap: () {
-                                context.read<WishlistCubit>().removeFromWishlist(
-                                  product.id ?? 0,
-                                );
+                            child: InkWell(
+                              onTap: product.id == null
+                                  ? null
+                                  : () {
+                                context
+                                    .read<WishlistCubit>()
+                                    .removeFromWishlist(product.id!);
                               },
+                              borderRadius: BorderRadius.circular(20.r),
                               child: CircleAvatar(
-                                radius: 12.r,
+                                radius: 14.r,
                                 backgroundColor: Colors.white,
                                 child: Icon(
-                                  Icons.close,
-                                  size: 16.sp,
+                                  Icons.delete_outline,
+                                  size: 18.sp,
                                   color: Colors.black,
                                 ),
                               ),
