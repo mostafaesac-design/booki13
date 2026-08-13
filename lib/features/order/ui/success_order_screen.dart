@@ -1,14 +1,16 @@
-import 'package:bookstore/features/home/ui/home_screen.dart';
+import 'package:bookstore/features/bottom_nav_bar/ui/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:bookstore/core/theme/app_colors.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SuccessOrderScreen extends StatelessWidget {
-  const SuccessOrderScreen({super.key});
+  final int orderId;
+  const SuccessOrderScreen({super.key, required this.orderId});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffF9F5FA),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
@@ -19,14 +21,10 @@ class SuccessOrderScreen extends StatelessWidget {
                 height: 110.h,
                 width: 110.w,
                 decoration: const BoxDecoration(
-                  color: Color(0xff1FC16B),
+                  color: AppColors.success,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  Icons.check,
-                  size: 60.sp,
-                  color: Colors.white,
-                ),
+                child: Icon(Icons.check, size: 60.sp, color: Colors.white),
               ),
               SizedBox(height: 24.h),
               Text(
@@ -47,6 +45,11 @@ class SuccessOrderScreen extends StatelessWidget {
                   height: 1.6,
                 ),
               ),
+              SizedBox(height: 12.h),
+              Text(
+                'Order #$orderId',
+                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+              ),
               const Spacer(),
               SizedBox(
                 width: double.infinity,
@@ -55,14 +58,12 @@ class SuccessOrderScreen extends StatelessWidget {
                   onPressed: () {
                     Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(
-                        builder: (_) => const HomeScreen(),
-                      ),
-                          (route) => false,
+                      MaterialPageRoute(builder: (_) => const BottomNavBar()),
+                      (route) => false,
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xffC7A84B),
+                    backgroundColor: AppColors.primaryAction,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14.r),
                     ),

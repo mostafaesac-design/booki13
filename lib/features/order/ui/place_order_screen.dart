@@ -1,21 +1,18 @@
-import 'package:bookstore/features/home/ui/home_screen.dart';
+import 'package:bookstore/features/order/data/models/governorate_model.dart';
+import 'package:bookstore/core/theme/app_colors.dart';
 import 'package:bookstore/features/order/ui/success_order_screen.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:bookstore/features/profile/cubit/order_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../cart/cubit/cart_cubit.dart';
 import '../../profile/cubit/order_cubit.dart';
-import '../../profile/data/models/order_model.dart';
 
 class PlaceOrderScreen extends StatefulWidget {
   final double totalPrice;
 
-  const PlaceOrderScreen({
-    super.key,
-    required this.totalPrice,
-  });
+  const PlaceOrderScreen({super.key, required this.totalPrice});
 
   @override
   State<PlaceOrderScreen> createState() => _PlaceOrderScreenState();
@@ -26,40 +23,21 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
-
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  String? selectedGovernorate;
+  GovernorateModel? selectedGovernorate;
 
-  final List<String> governorates = const [
-    'Cairo',
-    'Giza',
-    'Alexandria',
-    'Dakahlia',
-    'Sharqia',
-    'Qalyubia',
-    'Gharbia',
-    'Monufia',
-    'Beheira',
-    'Kafr El Sheikh',
-    'Fayoum',
-    'Beni Suef',
-    'Minya',
-    'Assiut',
-    'Sohag',
-    'Qena',
-    'Luxor',
-    'Aswan',
-    'Ismailia',
-    'Suez',
-    'Port Said',
-    'Damietta',
-    'North Sinai',
-    'South Sinai',
-    'Matrouh',
-    'Red Sea',
-    'New Valley',
-  ];
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final orderCubit = context.read<OrderCubit>();
+      if (orderCubit.state.governorates.isEmpty) {
+        orderCubit.getGovernorates();
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -70,28 +48,32 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
     super.dispose();
   }
 
-  void submitOrder() {
-    if (formKey.currentState!.validate()) {
-      final order = OrderModel(
-        orderNumber: DateTime.now().millisecondsSinceEpoch.toString(),
-        fullName: fullNameController.text.trim(),
-        email: emailController.text.trim(),
-        address: addressController.text.trim(),
-        phone: phoneController.text.trim(),
-        governorate: selectedGovernorate ?? '',
-        date: DateFormat('dd/MM/yyyy').format(DateTime.now()),
-        totalPrice: widget.totalPrice,
-      );
-
-      context.read<OrderCubit>().addOrder(order);
-      context.read<CartCubit>().clearCart();
-
-      Navigator.push(
+  Future<void> submitOrder() async {
+    if (!formKey.currentState!.validate() || selectedGovernorate == null) {
+      return;
+    }
+    final orderId = await context.read<OrderCubit>().placeOrder(
+      governorateId: selectedGovernorate!.id,
+      name: fullNameController.text.trim(),
+      email: emailController.text.trim(),
+      address: addressController.text.trim(),
+      phone: phoneController.text.trim(),
+    );
+    if (!mounted) return;
+    if (orderId != null && orderId > 0) {
+      await context.read<CartCubit>().loadCart();
+      if (!mounted) return;
+      Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (_) => const SuccessOrderScreen(),
-        ),
+        MaterialPageRoute(builder: (_) => SuccessOrderScreen(orderId: orderId)),
       );
+    } else {
+      final message =
+          context.read<OrderCubit>().state.ordersError ??
+          'Could not place the order.';
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
     }
   }
 
@@ -119,7 +101,7 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffF9F5FA),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 14.h),
@@ -160,7 +142,7 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
                         ),
                         SizedBox(height: 8.h),
                         Text(
-                          "Don't worry! It occurs. Please enter the email address linked with your account.",
+                          "Enter your delivery details to complete your order.",
                           style: TextStyle(
                             fontSize: 14.sp,
                             color: Colors.blueGrey,
@@ -168,19 +150,15 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
                           ),
                         ),
                         SizedBox(height: 22.h),
-
                         TextFormField(
                           controller: fullNameController,
                           decoration: buildInputDecoration('Full Name'),
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'Enter your full name';
-                            }
-                            return null;
-                          },
+                          validator: (value) =>
+                              value == null || value.trim().isEmpty
+                              ? 'Enter your full name'
+                              : null,
                         ),
                         SizedBox(height: 14.h),
-
                         TextFormField(
                           controller: emailController,
                           keyboardType: TextInputType.emailAddress,
@@ -189,65 +167,122 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
                             if (value == null || value.trim().isEmpty) {
                               return 'Enter your email';
                             }
+
                             if (!value.contains('@')) {
                               return 'Enter valid email';
                             }
+
                             return null;
                           },
                         ),
                         SizedBox(height: 14.h),
-
                         TextFormField(
                           controller: addressController,
                           decoration: buildInputDecoration('Address'),
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'Enter your address';
-                            }
-                            return null;
-                          },
+                          validator: (value) =>
+                              value == null || value.trim().isEmpty
+                              ? 'Enter your address'
+                              : null,
                         ),
                         SizedBox(height: 14.h),
-
                         TextFormField(
                           controller: phoneController,
                           keyboardType: TextInputType.phone,
                           decoration: buildInputDecoration('Phone'),
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'Enter your phone';
-                            }
-                            return null;
-                          },
+                          validator: (value) =>
+                              value == null || value.trim().isEmpty
+                              ? 'Enter your phone'
+                              : null,
                         ),
                         SizedBox(height: 14.h),
-
-                        DropdownButtonFormField<String>(
-                          value: selectedGovernorate,
-                          decoration: buildInputDecoration('Governorate'),
-                          items: governorates.map((gov) {
-                            return DropdownMenuItem<String>(
-                              value: gov,
-                              child: Text(gov),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              selectedGovernorate = value;
-                            });
-                          },
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Select governorate';
+                        BlocBuilder<OrderCubit, OrderState>(
+                          buildWhen: (previous, current) =>
+                              previous.governorates != current.governorates ||
+                              previous.isLoadingGovernorates !=
+                                  current.isLoadingGovernorates ||
+                              previous.governoratesError !=
+                                  current.governoratesError,
+                          builder: (context, state) {
+                            if (state.isLoadingGovernorates &&
+                                state.governorates.isEmpty) {
+                              return Container(
+                                height: 56.h,
+                                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(14.r),
+                                  border: Border.all(
+                                    color: Colors.grey.shade200,
+                                  ),
+                                ),
+                                child: const Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    ),
+                                    SizedBox(width: 12),
+                                    Text('Loading governorates...'),
+                                  ],
+                                ),
+                              );
                             }
-                            return null;
+                            if (state.governoratesError != null &&
+                                state.governorates.isEmpty) {
+                              return Container(
+                                padding: EdgeInsets.all(12.w),
+                                decoration: BoxDecoration(
+                                  color: Colors.red.shade50,
+                                  borderRadius: BorderRadius.circular(14.r),
+                                  border: Border.all(
+                                    color: Colors.red.shade200,
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    const Expanded(
+                                      child: Text(
+                                        'Failed to load governorates',
+                                        style: TextStyle(color: Colors.red),
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => context
+                                          .read<OrderCubit>()
+                                          .getGovernorates(),
+                                      child: const Text('Retry'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                            return DropdownButtonFormField<GovernorateModel>(
+                              initialValue: selectedGovernorate,
+                              isExpanded: true,
+                              decoration: buildInputDecoration('Governorate'),
+                              items: state.governorates
+                                  .map(
+                                    (governorate) =>
+                                        DropdownMenuItem<GovernorateModel>(
+                                          value: governorate,
+                                          child: Text(governorate.name),
+                                        ),
+                                  )
+                                  .toList(),
+                              onChanged: (value) =>
+                                  setState(() => selectedGovernorate = value),
+                              validator: (value) =>
+                                  value == null ? 'Select governorate' : null,
+                            );
                           },
                         ),
                       ],
                     ),
                   ),
                 ),
-
                 Row(
                   children: [
                     Text(
@@ -268,20 +303,23 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
                   ],
                 ),
                 SizedBox(height: 16.h),
-
                 SizedBox(
                   width: double.infinity,
                   height: 54.h,
                   child: ElevatedButton(
-                    onPressed: submitOrder,
+                    onPressed: context.watch<OrderCubit>().state.isPlacingOrder
+                        ? null
+                        : submitOrder,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xffC7A84B),
+                      backgroundColor: AppColors.primaryAction,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14.r),
                       ),
                     ),
                     child: Text(
-                      'Submit Order',
+                      context.watch<OrderCubit>().state.isPlacingOrder
+                          ? 'Submitting...'
+                          : 'Submit Order',
                       style: TextStyle(
                         fontSize: 18.sp,
                         fontWeight: FontWeight.w600,
