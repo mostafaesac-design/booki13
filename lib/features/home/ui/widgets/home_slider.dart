@@ -16,88 +16,74 @@ class HomeSlider extends StatefulWidget {
 }
 
 class _HomeSliderState extends State<HomeSlider> {
-  int activeIndex=0;
+  int activeIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HomeCubit, HomeState>(
-      buildWhen:(prev,current)=> current is SliderLoadingState|| current is SliderErrorState|| current is SliderSuccessState,
-  builder: (context, state) {
-    if(state is SliderLoadingState){
-      return Skeletonizer(
-        enabled: true,
-        child: Container(
-          height: 150.h,
-            width: double.infinity,
-           color: AppColors.grayColor,
-        ),
-      );
-    }else if(state is SliderSuccessState){
-      return Column(
-        children: [
-          CarouselSlider(
-            options: CarouselOptions(height: 130.0.h,
-                autoPlay: true,
-                onPageChanged: (index,r){
-                  setState(() {
-                    activeIndex=index;
-                  });
-                },
-                viewportFraction: 1
+      buildWhen: (prev, current) =>
+          current is SliderLoadingState ||
+          current is SliderErrorState ||
+          current is SliderSuccessState,
+      builder: (context, state) {
+        if (state is SliderLoadingState) {
+          return Skeletonizer(
+            enabled: true,
+            child: Container(
+              height: 150.h,
+              width: double.infinity,
+              color: AppColors.inputBackground,
             ),
-            items: state.sliders?.map((i) {
-              return Builder(
-                builder: (BuildContext context) {
-                  return  Container(
-                      width: MediaQuery.of(context).size.width,
-                      margin: EdgeInsets.symmetric(horizontal: 5.w),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(16.r),
-                        child: CustomNetworkImage(
-                          urlImage: i.image??"",
-                          width: double.infinity,
+          );
+        } else if (state is SliderSuccessState) {
+          return Column(
+            children: [
+              CarouselSlider(
+                options: CarouselOptions(
+                  height: 130.0.h,
+                  autoPlay: true,
+                  onPageChanged: (index, r) {
+                    setState(() {
+                      activeIndex = index;
+                    });
+                  },
+                  viewportFraction: 1,
+                ),
+                items: state.sliders?.map((i) {
+                  return Builder(
+                    builder: (BuildContext context) {
+                      return Container(
+                        width: MediaQuery.of(context).size.width,
+                        margin: EdgeInsets.symmetric(horizontal: 5.w),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16.r),
+                          child: CustomNetworkImage(
+                            urlImage: i.image ?? "",
+                            width: double.infinity,
+                          ),
                         ),
-                      ),
+                      );
+                    },
                   );
-                },
-              );
-            }).toList(),
-          ),
-          SizedBox(height: 10.h,),
-          AnimatedSmoothIndicator(
-            activeIndex: activeIndex,
-            count: state.sliders?.length??0,
-            effect: ExpandingDotsEffect(
-                dotHeight: 10,
-                activeDotColor: AppColors.mainColor
-            ),
-          )
-        ],
-      );
-    }else{
-      return Text("Error");
-    }
-  },
-);
+                }).toList(),
+              ),
+              SizedBox(height: 10.h),
+              AnimatedSmoothIndicator(
+                activeIndex: activeIndex,
+                count: state.sliders?.length ?? 0,
+                effect: ExpandingDotsEffect(
+                  dotHeight: 10,
+                  activeDotColor: AppColors.primary,
+                ),
+              ),
+            ],
+          );
+        } else if (state is SliderErrorState) {
+          return const SizedBox.shrink();
+        } else {
+          return const SizedBox.shrink();
+        }
+      },
+    );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

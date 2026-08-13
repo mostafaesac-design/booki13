@@ -4,12 +4,7 @@ class SliderResponse {
   List<dynamic>? error;
   int? status;
 
-  SliderResponse({
-    this.data,
-    this.message,
-    this.error,
-    this.status,
-  });
+  SliderResponse({this.data, this.message, this.error, this.status});
 
   factory SliderResponse.fromJson(Map<String, dynamic> json) {
     return SliderResponse(
@@ -30,8 +25,8 @@ class Data {
     return Data(
       sliders: json['sliders'] != null
           ? List<SliderModel>.from(
-        json['sliders'].map((x) => SliderModel.fromJson(x)),
-      )
+              json['sliders'].map((x) => SliderModel.fromJson(x)),
+            )
           : [],
     );
   }
@@ -43,8 +38,6 @@ class SliderModel {
   SliderModel({this.image});
 
   factory SliderModel.fromJson(Map<String, dynamic> json) {
-    return SliderModel(
-      image: json['image'],
-    );
+    return SliderModel(image: json['image']);
   }
 }

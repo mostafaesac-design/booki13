@@ -4,10 +4,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomeAppBar extends StatelessWidget {
   final VoidCallback onSearchTap;
+  final VoidCallback onNotificationsTap;
 
   const HomeAppBar({
     super.key,
     required this.onSearchTap,
+    required this.onNotificationsTap,
   });
 
   @override
@@ -15,16 +17,18 @@ class HomeAppBar extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Assets.images.splash.image(
-          width: 100.w,
-        ),
-        GestureDetector(
-          onTap: onSearchTap,
-          child: Icon(
-            Icons.search,
-            size: 24.sp,
-            color: Colors.black,
-          ),
+        Assets.images.splash.image(width: 100.w),
+        Row(
+          children: [
+            IconButton(
+              onPressed: onNotificationsTap,
+              icon: Icon(Icons.notifications_none_rounded, size: 24.sp),
+            ),
+            IconButton(
+              onPressed: onSearchTap,
+              icon: Icon(Icons.search, size: 24.sp, color: Colors.black),
+            ),
+          ],
         ),
       ],
     );

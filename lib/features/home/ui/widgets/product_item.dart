@@ -1,7 +1,6 @@
 import 'package:bookstore/core/theme/app_colors.dart';
 import 'package:bookstore/core/widgets/custom_network_image.dart';
 import 'package:bookstore/features/home/data/models/best_seller_response.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -17,29 +16,34 @@ class ProductItem extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(10.r),
       decoration: BoxDecoration(
-        color:backgroundColor?? AppColors.productBackgroundColor,
-        borderRadius: BorderRadius.circular(15.r)
+        color: backgroundColor ?? AppColors.productBackground,
+        borderRadius: BorderRadius.circular(15.r),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ClipRRect(
-              borderRadius: BorderRadiusGeometry.circular(15.r),
-              child: CustomNetworkImage(urlImage:product?.image??"")),
-          SizedBox(height: 12.h,),
-          Text(product?.name??"",style: TextStyle(
-            fontSize: 19.sp
-          ),maxLines: 1,
-          overflow: TextOverflow.ellipsis,
+            borderRadius: BorderRadiusGeometry.circular(15.r),
+            child: CustomNetworkImage(urlImage: product?.image ?? ""),
           ),
-          SizedBox(height: 8.h,),
+          SizedBox(height: 12.h),
+          Text(
+            product?.name ?? "",
+            style: TextStyle(fontSize: 19.sp),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          SizedBox(height: 8.h),
           Row(
             children: [
               Expanded(
-                child: Text(product?.price??"",style: TextStyle(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.bold
-                ),),
+                child: Text(
+                  product?.price ?? "",
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
               GestureDetector(
                 onTap: () {
@@ -55,22 +59,22 @@ class ProductItem extends StatelessWidget {
                   child: Container(
                     height: 30.h,
                     width: 60.w,
-                    color: AppColors.titleColor,
+                    color: AppColors.textPrimary,
                     child: Center(
                       child: Text(
                         "Buy",
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.borderColor,
+                          color: AppColors.border,
                         ),
                       ),
                     ),
                   ),
                 ),
-              )
+              ),
             ],
-          )
+          ),
         ],
       ),
     );

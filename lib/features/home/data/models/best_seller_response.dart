@@ -6,19 +6,23 @@ class BestSellerResponse {
   BestSellerResponse.fromJson(Map<String, dynamic> json) {
     status = json["status"];
     message = json["message"];
-    data = json["data"] == null ? null : BestSellerData.fromJson(json["data"]);
+    final rawData = json['data'];
+    data = rawData == null ? null : BestSellerData.fromJson(rawData);
   }
 }
 
 class BestSellerData {
   List<Product>? products;
 
-  BestSellerData.fromJson(Map<String, dynamic> json) {
-    if (json["products"] != null) {
+  BestSellerData.fromJson(dynamic json) {
+    final rawProducts = json is List ? json : json['products'];
+    if (rawProducts is List) {
       products = [];
-      json["products"].forEach((v) {
-        products!.add(Product.fromJson(v));
-      });
+      for (final item in rawProducts) {
+        if (item is Map<String, dynamic>) {
+          products!.add(Product.fromJson(item));
+        }
+      }
     }
   }
 }
@@ -35,16 +39,46 @@ class Product {
   String? category;
   int? bestSeller;
 
+  Product({
+    this.id,
+    this.name,
+    this.description,
+    this.price,
+    this.discount,
+    this.priceAfterDiscount,
+    this.stock,
+    this.image,
+    this.category,
+    this.bestSeller,
+  });
+
   Product.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
-    description = json['description'];
-    price = json['price'];
+    id = _asInt(json['id'] ?? json['product_id'] ?? json['item_product_id']);
+    name = (json['name'] ?? json['product_name'] ?? json['item_product_name'])
+        ?.toString();
+    description = (json['description'] ?? json['product_description'])
+        ?.toString();
+    price =
+        (json['price'] ?? json['product_price'] ?? json['item_product_price'])
+            ?.toString();
     discount = json['discount'];
-    priceAfterDiscount = json['price_after_discount'];
-    stock = json['stock'];
-    image = json['image'];
-    category = json['category'];
-    bestSeller = json['best_seller'];
+    priceAfterDiscount =
+        json['price_after_discount'] ??
+        json['product_price_after_discount'] ??
+        json['item_product_price_after_discount'];
+    stock = _asInt(
+      json['stock'] ?? json['product_stock'] ?? json['item_product_stock'],
+    );
+    image =
+        (json['image'] ?? json['product_image'] ?? json['item_product_image'])
+            ?.toString();
+    category = (json['category'] ?? json['category_name'])?.toString();
+    bestSeller = _asInt(json['best_seller']);
   }
+
+  double get effectivePrice =>
+      (priceAfterDiscount ?? num.tryParse(price ?? '') ?? 0).toDouble();
+
+  static int? _asInt(dynamic value) =>
+      value is int ? value : int.tryParse('$value');
 }
