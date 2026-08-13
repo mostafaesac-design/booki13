@@ -1,136 +1,138 @@
 import 'package:bookstore/core/widgets/app_button.dart';
 import 'package:bookstore/core/widgets/app_text_field.dart';
+import 'package:bookstore/features/auth/cubit/auth_cubit.dart';
 import 'package:bookstore/features/auth/ui/otp_verification_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:bookstore/core/theme/app_colors.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-
-class ForgotPasswordScreen extends StatelessWidget {
+class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
 
   @override
+  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+}
+
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+  final emailController = TextEditingController();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    super.dispose();
+  }
+
+  void sendCode() {
+    FocusScope.of(context).unfocus();
+
+    final email = emailController.text.trim();
+
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter your email address.')),
+      );
+      return;
+    }
+
+    final emailPattern = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+
+    if (!emailPattern.hasMatch(email)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid email address.')),
+      );
+      return;
+    }
+
+    context.read<AuthCubit>().forgetPassword(email);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.w),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return SingleChildScrollView(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                  child: IntrinsicHeight(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 16.h),
-
-                        Container(
-                          width: 40.w,
-                          height: 40.h,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12.r),
-                            border: Border.all(
-                              color: const Color(0xFFE8ECF4),
-                              width: 1.w,
-                            ),
-                          ),
-                          child: IconButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            icon: Icon(
-                              Icons.arrow_back_ios_new,
-                              size: 18.sp,
-                              color: const Color(0xFF1E1E1E),
-                            ),
-                          ),
-                        ),
-
-                        SizedBox(height: 48.h),
-
-                        Text(
-                          'Forgot Password?',
-                          style: TextStyle(
-                            fontSize: 32.sp,
-                            fontWeight: FontWeight.w700,
-                            height: 1.2,
-                            color: const Color(0xFF1E1E1E),
-                          ),
-                        ),
-
-                        SizedBox(height: 12.h),
-
-                        SizedBox(
-                          width: 310.w,
-                          child: Text(
-                            "Don't worry! It occurs. Please enter the email\naddress linked with your account.",
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w500,
-                              height: 1.6,
-                              color: const Color(0xFF8391A1),
-                            ),
-                          ),
-                        ),
-
-                        SizedBox(height: 36.h),
-                          AppTextField(hintText: "Enter your email"),
-
-
-                        SizedBox(height: 30.h),
-
-                      AppButton(text: "Send Code",onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                            OtpVerificationScreen(),
-                          ),
-                        );
-                      },),
-
-
-                        const Spacer(),
-
-                        Center(
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: RichText(
-                              text: TextSpan(
-                                style: TextStyle(
-                                  fontSize: 15.sp,
-                                  fontWeight: FontWeight.w600,
-                                  color: const Color(0xFF1E1E1E),
-                                ),
-                                children: const [
-                                  TextSpan(text: 'Remember Password? '),
-                                  TextSpan(
-                                    text: 'Login',
-                                    style: TextStyle(
-                                      color: Color(0xFFBFA054),
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        SizedBox(height: 24.h),
-                      ],
+    return BlocConsumer<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (state is ForgotPasswordSuccessState) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => BlocProvider.value(
+                value: context.read<AuthCubit>(),
+                child: OtpVerificationScreen(
+                  email: emailController.text.trim(),
+                ),
+              ),
+            ),
+          );
+        } else if (state is ForgotPasswordErrorState) {
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'We could not send the verification code. Please try again later.',
+                ),
+              ),
+            );
+        }
+      },
+      builder: (context, state) {
+        final isLoading = state is ForgotPasswordLoadingState;
+        return Scaffold(
+          backgroundColor: Colors.white,
+          body: SafeArea(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 16.h),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.arrow_back_ios_new),
+                  ),
+                  SizedBox(height: 48.h),
+                  Text(
+                    'Forgot Password?',
+                    style: TextStyle(
+                      fontSize: 32.sp,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                ),
-              );
-            },
+                  SizedBox(height: 12.h),
+                  Text(
+                    "Don't worry! Please enter the email address linked with your account.",
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      color: AppColors.hint,
+                      height: 1.6,
+                    ),
+                  ),
+                  SizedBox(height: 36.h),
+                  AppTextField(
+                    hintText: 'Enter your email',
+                    controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.done,
+                  ),
+                  SizedBox(height: 30.h),
+                  AppButton(
+                    text: isLoading ? 'Sending...' : 'Send Code',
+                    onTap: isLoading ? null : sendCode,
+                  ),
+                  const Spacer(),
+                  Center(
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Remember Password? Login'),
+                    ),
+                  ),
+                  SizedBox(height: 24.h),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

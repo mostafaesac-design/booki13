@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:bookstore/core/theme/app_colors.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'login_screen.dart';
@@ -24,7 +25,7 @@ class PasswordChangedScreen extends StatelessWidget {
                 width: 110.w,
                 height: 110.h,
                 decoration: const BoxDecoration(
-                  color: Color(0xFF22C55E),
+                  color: AppColors.successAlt,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -41,7 +42,7 @@ class PasswordChangedScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 32.sp,
                   fontWeight: FontWeight.w700,
-                  color: const Color(0xFF1E1E1E),
+                  color: AppColors.textPrimary,
                 ),
               ),
 
@@ -56,7 +57,7 @@ class PasswordChangedScreen extends StatelessWidget {
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w500,
                     height: 1.6,
-                    color: const Color(0xFF8391A1),
+                    color: AppColors.hint,
                   ),
                 ),
               ),
@@ -83,7 +84,7 @@ class PasswordChangedScreen extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => const LoginScreen(),
                     ),
-                        (route) => false,
+                    (route) => false,
                   );
                 },
                 child: Container(
@@ -91,7 +92,7 @@ class PasswordChangedScreen extends StatelessWidget {
                   padding: EdgeInsets.symmetric(vertical: 18.h),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFBFA054),
+                    color: AppColors.primary,
                     borderRadius: BorderRadius.circular(16.r),
                   ),
                   child: Text(
