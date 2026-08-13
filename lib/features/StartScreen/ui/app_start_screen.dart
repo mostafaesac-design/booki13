@@ -18,9 +18,13 @@ class _AppStartScreenState extends State<AppStartScreen> {
 
   void _goNext() {
     Future.microtask(() {
+      if (!mounted) return;
+
       final token = AppConstants.token;
 
-      if (token == null || token.trim().isEmpty) {
+      if (!AppConstants.hasSeenWelcome) {
+        Navigator.pushReplacementNamed(context, Routes.welcomeScreen);
+      } else if (token == null || token.trim().isEmpty) {
         Navigator.pushReplacementNamed(context, Routes.loginScreen);
       } else {
         Navigator.pushReplacementNamed(context, Routes.bottomNavBarScreen);
@@ -30,10 +34,6 @@ class _AppStartScreenState extends State<AppStartScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: CircularProgressIndicator(),
-      ),
-    );
+    return const Scaffold(body: Center(child: CircularProgressIndicator()));
   }
 }
