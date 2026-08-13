@@ -16,18 +16,10 @@ class BookStoreApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<CartCubit>(
-          create: (_) => CartCubit(),
-        ),
-        BlocProvider<WishlistCubit>(
-          create: (_) => WishlistCubit(),
-        ),
-        BlocProvider<ProfileCubit>(
-          create: (_) => ProfileCubit(),
-        ),
-        BlocProvider<OrderCubit>(
-          create: (_) => OrderCubit(),
-        ),
+        BlocProvider<CartCubit>(create: (_) => CartCubit()),
+        BlocProvider<WishlistCubit>(create: (_) => WishlistCubit()),
+        BlocProvider<ProfileCubit>(create: (_) => ProfileCubit()),
+        BlocProvider<OrderCubit>(create: (_) => OrderCubit()),
       ],
       child: ScreenUtilInit(
         designSize: const Size(375, 812),
@@ -35,9 +27,7 @@ class BookStoreApp extends StatelessWidget {
         splitScreenMode: true,
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            fontFamily: "DM",
-          ),
+          theme: ThemeData(fontFamily: "DM"),
           localizationsDelegates: context.localizationDelegates,
           supportedLocales: context.supportedLocales,
           locale: context.locale,
